@@ -196,21 +196,31 @@ Lemma cequiv_ex1:
 <{ X := 2; X = 2 -> skip }> == 
 <{ X := 2 }>.
 Proof.
-  (* TODO *)
-Qed.
+  split; unfold cequiv_imp; intros; eexists.
+    -  inversion H. subst. inversion H2. subst. inversion H8. subst. inversion H10. subst.
+        -- eapply E_Asgn. reflexivity.
+        -- subst. discriminate.
+        -- subst. inversion H8. subst. try discriminate. subst.
+            --- rewrite H12. discriminate. --- subst. inversion H8. Admitted.
+(*Qed.*)
 
 Lemma cequiv_ex2:
 <{ (X := 1 !! X := 2); X = 2 -> skip }> == 
 <{ X := 2 }>.
 Proof.
   (* TODO *)
-Qed.
+Admitted.
+(*Qed.*)
 
 
 Lemma choice_idempotent: forall c,
 <{ c !! c }> == <{ c }>.
 Proof.
-  (* TODO *)
+  intros. split; unfold cequiv_imp; intros; eexists.
+    - inversion H. subst.
+      -- inversion H8. subst. eapply E_Skip.
+      -- subst. eapply E_Asgn. reflexivity.
+      -- subst. eapply E_Seq. --- .
 Qed.
 
 Lemma choice_comm: forall c1 c2,
