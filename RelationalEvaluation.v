@@ -41,11 +41,11 @@ Inductive ceval : com -> state -> list (state * com) ->
  st / q =[ c1 ]=> st' / q' / Success ->
  st' / q' =[ c2 ]=> st'' / q'' / Success ->
  st / q =[ c1 ; c2 ]=> st'' / q'' / Success
-| E_IfTrue : forall st st' b c1 c2,
+| E_IfTrue : forall st st' b c1 c2 q q',
  beval st b = true ->
  st / q =[ c1 ]=> st' / q' / Success ->
  st / q =[ if b then c1 else c2 end ]=> st' / q' / Success
-| E_IfFalse : forall st st' b c1 c2,
+| E_IfFalse : forall st st' b c1 c2 q q',
  beval st b = false -> 
  st / q =[ c2 ]=> st' / q' / Success ->
  st / q =[ if b then c1 else c2 end ]=> st' / q' / Success
@@ -54,28 +54,28 @@ Inductive ceval : com -> state -> list (state * com) ->
  st / q =[ while b do c end ]=> st / q / Success
 | E_WhileTrue : forall st st' st'' q q' q'' b c,
  beval st b = true ->
- s /t q =[ c ]=> st' / q' / Success ->
+ st / q =[ c ]=> st' / q' / Success ->
  st' / q' =[ while b do c end ]=> st'' / q'' / Success ->
  st / q =[ while b do c end ]=> st'' / q'' / Success 
 | E_ChoiceLeft : forall st q c1 c2 st' q',
  st / q =[ c1 ]=> st' / q' / Success ->
- st / q =[ c1 !! c2 ]=> st' / ((st, c2) :: q) / Success
+ st / q =[ c1 !! c2 ]=> st' / ((st, c2) :: q) / Success 
 | E_ChoiceRight : forall st q c1 c2 st' q',
  st / q =[ c1 ]=> st' / q' / Success ->
- st / q =[ c1 !! c2 ]=> st' / ((st, c2) :: q) / Success
+ st / q =[ c1 !! c2 ]=> st' / ((st, c2) :: q) / Success 
 | E_GuardTrue : forall st q c st' q' b,
- if beval st b = true ->
+ beval st b = true ->
  st / q =[ c ]=> st' / q' / Success ->
- st / q =[ b -> c ]=> st' / q' / Success
-| E_GuardFalseEmpty : forall st q c st' q' b,
- if beval st b = false ->
+ st / q =[ b -> c ]=> st' / q' / Success 
+| E_GuardFalseEmpty : forall st q c b,
+ beval st b = false ->
  q = [] ->
- st / q =[ b -> c ] st / q / Fail
+ st / q =[ b -> c ]=> st / q / Fail
 | E_GuardFalseCont : forall st q c c2 st' st'' q' q'' b,
- if beval st b = false ->
- q = (st' c2) :: q' ->
- st' / q' =[ c2 ] st'' / q'' / Success ->
- st / q =[ b -> c ]=> st'' / q'' / success
+ beval st b = false ->
+ q = (st', c2) :: q' ->
+ st' / q' =[ c2 ]=> st'' / q'' / Success ->
+ st / q =[ b -> c ]=> st'' / q'' / Success
 
 
 (* TODO. Hint: follow the same structure as shown in the chapter Imp *)
