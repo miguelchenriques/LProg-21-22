@@ -1,0 +1,4 @@
+_CoqProject
+*.aux
+*.glob
+*.vo*
