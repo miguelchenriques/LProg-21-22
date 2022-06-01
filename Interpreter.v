@@ -11,18 +11,6 @@ Inductive interpreter_result : Type :=
   | OutOfGas.
 
 
-Definition first {A B : Type} (p : prod A B) : A := 
-  match p with
-  | pair a b => a
-  end.
-
-Definition second {A B : Type} (p : prod A B) : B := 
-  match p with
-  | pair a b => b
-  end.
-
-Compute first (1,2).
-
 (** We can improve the readability of this version by introducing a
     bit of auxiliary notation to hide the plumbing involved in
     repeatedly matching against optional states. *)
