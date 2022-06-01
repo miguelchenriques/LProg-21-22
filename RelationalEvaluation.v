@@ -210,20 +210,21 @@ Lemma cequiv_ex2:
 <{ X := 2 }>.
 Proof.
   split; unfold cequiv_imp; intros; eexists.
-    - inversion H; subst. inversion H2; subst. inversion H8; subst; inversion H10; subst. try discriminate. 
-      -- inversion H11; subst. inversion H4; subst; try discriminate. inversion H4; subst.
+    - inversion H; subst. inversion H2; subst. inversion H8; subst; inversion H10; subst; try discriminate. 
+      -- inversion H11; subst. inversion H4; subst; try discriminate.
         --- inversion H13; subst; try discriminate. inversion H15; subst. apply E_Asgn. reflexivity.
         --- inversion H12.
-      -- inversion H10; subst. inversion H8; subst. inversion H11; subst; try discriminate.
-        --- 
+      -- inversion H10; subst; try discriminate. admit.
+      -- inversion H7; subst. admit.
+Admitted.
 Qed.
 
 
 Lemma choice_idempotent: forall c,
 <{ c !! c }> == <{ c }>.
 Proof.
-  split; unfold cequiv_imp; intros st1 st2 q1 q2 result H. 
-    - 
+  split; unfold cequiv_imp; intros st1 st2 q1 q2 result H; inversion H; subst; eexists; try discriminate.
+Admitted.
 Qed.
 
 Lemma choice_comm: forall c1 c2,
