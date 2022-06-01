@@ -195,26 +195,34 @@ Lemma cequiv_ex1:
 <{ X := 2 }>.
 Proof.
   split; unfold cequiv_imp; intros; eexists.
-    -  inversion H. subst. inversion H2. subst. inversion H8. subst. inversion H10. subst.
-        -- eapply E_Asgn. reflexivity.
-        -- subst. discriminate.
-        -- subst. inversion H8. subst. try discriminate. subst.
-            --- rewrite H12. discriminate. --- subst. inversion H8. Admitted.
-(*Qed.*)
+    -  inversion H; subst. inversion H2; subst. inversion H8; subst; try discriminate; inversion H10; subst.
+        -- apply E_Asgn. reflexivity.
+        -- inversion H7; subst.
+    - inversion H; subst. eapply E_Seq; try discriminate.
+      -- apply E_Asgn. reflexivity.
+      -- apply E_GuardTrue.
+        --- reflexivity.
+        --- apply E_Skip. 
+Qed.
 
 Lemma cequiv_ex2:
 <{ (X := 1 !! X := 2); X = 2 -> skip }> == 
 <{ X := 2 }>.
 Proof.
-  (* TODO *)
-Admitted.
-(*Qed.*)
+  split; unfold cequiv_imp; intros; eexists.
+    - inversion H; subst. inversion H2; subst. inversion H8; subst; inversion H10; subst. try discriminate. 
+      -- inversion H11; subst. inversion H4; subst; try discriminate. inversion H4; subst.
+        --- inversion H13; subst; try discriminate. inversion H15; subst. apply E_Asgn. reflexivity.
+        --- inversion H12.
+      -- inversion H10; subst. inversion H8; subst. inversion H11; subst; try discriminate.
+        --- 
+Qed.
 
 
 Lemma choice_idempotent: forall c,
 <{ c !! c }> == <{ c }>.
 Proof.
-  split; unfold cequiv_imp; intros; eexists; inversion H; subst; try discriminate. 
+  split; unfold cequiv_imp; intros st1 st2 q1 q2 result H. 
     - 
 Qed.
 
