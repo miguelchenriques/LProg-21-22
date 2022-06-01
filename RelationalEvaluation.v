@@ -83,17 +83,15 @@ Inductive ceval : com -> state -> list (state * com) ->
  st / q =[ c ]=> st' / q' / r ->
  st / q =[ b -> c ]=> st' / q' / r 
 
-| E_GuardFalseEmpty : forall st q c b,
+| E_GuardFalseEmpty : forall st q c b st',
  beval st b = false ->
  q = [] ->
- st / q =[ b -> c ]=> empty_st / [] / Fail
+ st / q =[ b -> c ]=> st' / [] / Fail
 
-| E_GuardFalseCont : forall st q c c2 st' st'' q' q'' b r,
+| E_GuardFalseCont : forall st q c c' q' st' st'' b r,
  beval st b = false ->
- q = (st', c2) :: q' ->
- st' / q' =[ c2 ; c ]=> st'' / q'' / r ->
- st / q =[ b -> c ]=> st'' / q'' / r
-
+ st' / q =[ c' ; b -> c ]=> st'' / q' / r ->
+ st / ((st', c') :: q) =[ b -> c ]=> st'' / q' / r
 
 (* TODO. Hint: follow the same structure as shown in the chapter Imp *)
 where "st1 '/' q1 '=[' c ']=>' st2 '/' q2 '/' r" := (ceval c st1 q1 r st2 q2).
@@ -153,10 +151,10 @@ Proof.
   eexists.
   apply E_Seq with (X !-> 1) [(empty_st, <{ X:=2 }>)].
     - apply E_ChoiceLeft with [(empty_st, <{ X:=2 }>)]. reflexivity. apply E_Asgn. reflexivity.
-    - apply E_GuardFalseCont with <{X:=2}> empty_st []. reflexivity. reflexivity.
+    - apply E_GuardFalseCont. reflexivity.
       apply E_Seq with ( X!->2) [].
       -- apply E_Asgn. reflexivity.
-      -- replace (X !-> 3) with (X !-> 3; X!->2).  ---apply E_Asgn. reflexivity. --- apply t_update_shadow.
+      -- replace (X !-> 3) with (X !-> 3; X!->2).  --- apply E_GuardTrue. reflexivity. apply E_Asgn. reflexivity. --- apply t_update_shadow.
 Qed.
     
 Example ceval_example_guard4: exists q,
@@ -216,11 +214,8 @@ Admitted.
 Lemma choice_idempotent: forall c,
 <{ c !! c }> == <{ c }>.
 Proof.
-  intros. split; unfold cequiv_imp; intros; eexists.
-    - inversion H. subst.
-      -- inversion H8. subst. eapply E_Skip.
-      -- subst. eapply E_Asgn. reflexivity.
-      -- subst. eapply E_Seq. --- .
+  split; unfold cequiv_imp; intros; eexists; inversion H; subst; try discriminate. 
+    - 
 Qed.
 
 Lemma choice_comm: forall c1 c2,
