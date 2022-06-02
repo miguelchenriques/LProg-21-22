@@ -203,20 +203,35 @@ Proof.
         --- apply E_Skip. 
 Qed.
 
-(*
+
 Lemma cequiv_ex2:
 <{ (X := 1 !! X := 2); X = 2 -> skip }> == 
 <{ X := 2 }>.
 Proof.
-  split; unfold cequiv_imp; intros; eexists.
-    - inversion H; subst. inversion H2; subst. inversion H8; subst; inversion H10; subst; try discriminate. 
-      -- inversion H11; subst. inversion H4; subst; try discriminate.
-        --- inversion H13; subst; try discriminate. inversion H15; subst. apply E_Asgn. reflexivity.
-        --- inversion H12.
-      -- inversion H10; subst; try discriminate. admit.
-      -- inversion H7; subst. admit.
-Admitted.
-*)
+  split; intros st1 st2 q1 q2 result H; eexists.
+    - inversion H; subst.
+      -- inversion H2; subst.
+        --- inversion H8; subst.
+          ---- inversion H11; subst. inversion H9; subst. apply E_Asgn. discriminate.
+          ---- inversion H9; subst. inversion H11; subst.
+          ---- inversion H13; subst.
+            ----- inversion H11; subst.
+              ------ inversion H3; subst. inversion H15; subst. apply E_Asgn. reflexivity.
+              ------ inversion H3; subst. inversion H4; subst.
+              ------ inversion H3; subst. inversion H4; subst.
+            ----- inversion H10; subst.
+        --- inversion H9; subst. inversion H8; subst.
+          ---- inversion H11; subst. apply E_Asgn. reflexivity.
+          ---- inversion H3.
+          ---- inversion H12.
+      -- inversion H7; subst; inversion H8. 
+    - eapply E_Seq.
+      -- apply E_ChoiceRight. inversion H. apply E_Asgn. reflexivity.
+      -- apply E_GuardTrue.
+        --- reflexivity.
+        --- inversion H; subst. apply E_Skip.
+Qed.
+
 
 
 Lemma choice_idempotent: forall c,
@@ -296,5 +311,11 @@ Lemma choice_congruence: forall c1 c1' c2 c2',
 c1 == c1' -> c2 == c2' ->
 <{ c1 !! c2 }> == <{ c1' !! c2' }>.
 Proof.
-  (* TODO *)
+  split; intros st1 st2 q1 q2 result H1.
+    - inversion H1; subst.
+      -- apply H in H9. inversion H9; subst. eexists. apply E_ChoiceLeft. apply H2.
+      -- apply H0 in H9. inversion H9; subst. eexists. apply E_ChoiceRight. apply H2.
+    - inversion H1; subst.
+      -- apply H in H9. inversion H9; subst. eexists. apply E_ChoiceLeft. apply H2.
+      -- apply H0 in H9. inversion H9; subst. eexists. apply E_ChoiceRight. apply H2.
 Qed.
