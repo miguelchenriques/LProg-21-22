@@ -68,15 +68,13 @@ Inductive ceval : com -> state -> list (state * com) ->
  st' / q' =[ while b do c end ]=> st'' / q'' / Success ->
  st / q =[ while b do c end ]=> st'' / q'' / Success 
 
-| E_ChoiceLeft : forall st q c1 c2 st' q' q'' r,
- q' = ((st, c2) :: q) ->
- st / q' =[ c1 ]=> st' / q'' / r ->
- st / q =[ c1 !! c2 ]=> st' / q'' / r 
+| E_ChoiceLeft : forall st q c1 c2 st' q' r,
+ st / q =[ c1 ]=> st' / q' / r ->
+ st / q =[ c1 !! c2 ]=> st' / ((st, c2) :: q') / r 
 
-| E_ChoiceRight : forall st q c1 c2 st' q' q'' r,
- q' = ((st, c1) :: q) ->
- st / q' =[ c2 ]=> st' / q'' / r ->
- st / q =[ c1 !! c2 ]=> st' / q'' / r 
+| E_ChoiceRight : forall st q c1 c2 st' q' r,
+ st / q =[ c2 ]=> st' / q' / r ->
+ st / q =[ c1 !! c2 ]=> st' / ((st, c1) :: q') / r 
 
 | E_GuardTrue : forall st q c st' q' b r,
  beval st b = true ->
@@ -150,7 +148,7 @@ empty_st / [] =[
 Proof.
   eexists.
   apply E_Seq with (X !-> 1) [(empty_st, <{ X:=2 }>)].
-    - apply E_ChoiceLeft with [(empty_st, <{ X:=2 }>)]. reflexivity. apply E_Asgn. reflexivity.
+    - apply E_ChoiceLeft. apply E_Asgn. reflexivity.
     - apply E_GuardFalseCont. reflexivity.
       apply E_Seq with ( X!->2) [].
       -- apply E_Asgn. reflexivity.
@@ -165,7 +163,7 @@ empty_st / [] =[
 Proof.
   eexists.
   apply E_Seq with (X !-> 2) [(empty_st, <{ X:=1 }>)].
-    - apply E_ChoiceRight with [(empty_st, <{ X:=1 }>)]. reflexivity. apply E_Asgn. reflexivity.
+    - apply E_ChoiceRight. apply E_Asgn. reflexivity.
     - apply E_GuardTrue. reflexivity.
       replace (X !-> 3) with (X !-> 3; X!->2). apply E_Asgn. reflexivity. apply t_update_shadow.
 Qed.
@@ -205,6 +203,7 @@ Proof.
         --- apply E_Skip. 
 Qed.
 
+(*
 Lemma cequiv_ex2:
 <{ (X := 1 !! X := 2); X = 2 -> skip }> == 
 <{ X := 2 }>.
@@ -217,33 +216,80 @@ Proof.
       -- inversion H10; subst; try discriminate. admit.
       -- inversion H7; subst. admit.
 Admitted.
-Qed.
+*)
 
 
 Lemma choice_idempotent: forall c,
 <{ c !! c }> == <{ c }>.
 Proof.
-  split; unfold cequiv_imp; intros st1 st2 q1 q2 result H; inversion H; subst; eexists; try discriminate.
-Admitted.
+  split; intros st1 st2 q1 q2 result H.
+    - inversion H; subst; try discriminate.
+      -- eexists. apply H7.
+      -- eexists. apply H7.
+    - eexists. apply E_ChoiceLeft. apply H.
 Qed.
 
 Lemma choice_comm: forall c1 c2,
 <{ c1 !! c2 }> == <{ c2 !! c1 }>.
 Proof.
-  (* TODO *)
+  split; intros st1 st2 q1 q2 result H.
+    - inversion H; subst.
+      -- eexists. apply E_ChoiceRight. apply H7.
+      -- eexists. apply E_ChoiceLeft. apply H7.
+    - inversion H; subst.
+      -- eexists. apply E_ChoiceRight. apply H7.
+      -- eexists. apply E_ChoiceLeft. apply H7.
 Qed.
 
 Lemma choice_assoc: forall c1 c2 c3,
 <{ (c1 !! c2) !! c3 }> == <{ c1 !! (c2 !! c3) }>.
 Proof.
-  (* TODO *)
+  split; intros st1 st2 q1 q2 result H.
+    - inversion H; subst.
+      -- inversion H7; subst.
+        --- eexists. apply E_ChoiceLeft. apply H8.
+        --- eexists. apply E_ChoiceRight. apply E_ChoiceLeft. apply H8.
+      -- eexists. apply E_ChoiceRight. apply E_ChoiceRight. apply H7.
+    - inversion H; subst.
+      -- eexists. apply E_ChoiceLeft. apply E_ChoiceLeft. apply H7.
+      -- inversion H7; subst.
+        --- eexists. apply E_ChoiceLeft. apply E_ChoiceRight. apply H8.
+        --- eexists. apply E_ChoiceRight. apply H8.
 Qed.
 
 
 Lemma choice_seq_distr_l: forall c1 c2 c3,
 <{ c1 ; (c2 !! c3)}> == <{ (c1;c2) !! (c1;c3) }>.
 Proof.
-  (* TODO *)
+  split; intros st1 st2 q1 q2 result H.
+    - inversion H; subst. 
+      -- inversion H8; subst.
+        --- eexists. apply E_ChoiceLeft. eapply E_Seq.
+          ---- apply H2.
+          ---- apply H9.
+        --- eexists. apply E_ChoiceRight. eapply E_Seq.
+          ---- apply H2.
+          ---- apply H9.
+      -- inversion H; subst.
+        --- inversion H9; subst.
+          ---- eexists. apply E_ChoiceLeft. eapply E_Seq.
+            ----- apply H2.
+            ----- apply H10.
+          ---- eexists. apply E_ChoiceRight. eapply E_Seq.
+            ----- apply H2.
+            ----- apply H10.
+        --- eexists. apply E_ChoiceLeft. eapply E_SeqFail. apply H7.
+    - inversion H; subst.
+      -- inversion H7; subst. 
+        --- eexists. eapply E_Seq.
+          ---- apply H2.
+          ---- apply E_ChoiceLeft. apply H9.
+        --- eexists. apply E_SeqFail. apply H8.
+     -- inversion H7; subst.
+       --- eexists. eapply E_Seq.
+        ---- apply H2.
+        ---- apply E_ChoiceRight. apply H9.
+      --- eexists. eapply E_SeqFail. apply H8.
 Qed.
 
 Lemma choice_congruence: forall c1 c1' c2 c2',
