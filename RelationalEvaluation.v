@@ -215,10 +215,10 @@ Proof.
           ---- inversion H11; subst. inversion H9; subst. apply E_Asgn. discriminate.
           ---- inversion H9; subst. inversion H11; subst.
           ---- inversion H13; subst.
-            ----- inversion H11; subst.
-              ------ inversion H3; subst. inversion H15; subst. apply E_Asgn. reflexivity.
-              ------ inversion H3; subst. inversion H4; subst.
-              ------ inversion H3; subst. inversion H4; subst.
+            ----- inversion H11; subst; inversion H3; subst.
+              ------ inversion H15; subst. apply E_Asgn. reflexivity.
+              ------ inversion H4; subst.
+              ------ inversion H4; subst.
             ----- inversion H10; subst.
         --- inversion H9; subst. inversion H8; subst.
           ---- inversion H11; subst. apply E_Asgn. reflexivity.
