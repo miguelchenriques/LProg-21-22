@@ -5,8 +5,25 @@
  - Filipe Barroso, 102152, filipe.bom.barroso@tecnico.ulisboa.pt
 
 # Implemented Features
-TODO: Identify what you have done and, in particular, **identify any missing features**.
+Task 1 (Imp.v):
 
-# Extras
-TODO: Identify and describe additional work that you have done,
-      so that it can be considered for extra credits.
+- Extend `com` ✔️
+- New notation ✔️
+- Examples `p1` and `p2` ✔️
+
+Task 2 (Interpreter.v):
+
+- Implementation of step-indexed evaluator ✔️
+- Proof of `p1_equals_p2` ✔️
+- Proof of `ceval_step_more` ✔️
+
+Task 3 (RelationalEvaluation.v):
+
+- Definition of `ceval` ✔️
+- Proof of the examples `ceval_example_*` ✔️
+- Proof of `cequiv_ex1` and `cequiv_ex2` ✔️
+- Idempotence ✔️
+- Commutativity ✔️
+- Associativity ✔️
+- Distributivity (left) ✔️
+- Congruence ✔️
