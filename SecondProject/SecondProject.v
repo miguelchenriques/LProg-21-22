@@ -175,12 +175,9 @@ Inductive ceval : com -> state -> result -> Prop :=
       beval st b = false ->
       st =[ assert b ]=> RError
 
-  | E_AssumePass : forall st b,
+  | E_Assume : forall st b,
       beval st b = true ->
       st =[ assume b ]=> RNormal st
-  | E_AssumeFail : forall st b,
-      beval st b = false ->
-      st =[ assume b ]=> RError (* O que fazer?*)
 
   | E_Havoc : forall st x n,
     (*verificar se n é numero*)
@@ -230,24 +227,41 @@ Theorem assume_false: forall P Q b,
        (forall st, beval st b = false) ->
        ({{P}} assume b {{Q}}).
 Proof.
-  (* TODO *)
+  intros. 
+  unfold hoare_triple. 
+  intros. 
+  inversion H0. subst. 
+  specialize (H st). 
+  rewrite H3 in H. 
+  inversion H.
 Qed.
 
 Theorem assert_assume_differ : exists P b Q,
        ({{P}} assume b {{Q}})
   /\ ~ ({{P}} assert b {{Q}}).
 Proof.
-  exists (* TODO: example for P *)
-  exists (* TODO: example for b *)
-  exists (* TODO: example for Q *)
-  (* TODO *)
+  exists (fun st => True). (* TODO: example for P *)
+  exists BFalse. (* TODO: example for b *)
+  exists (fun st => True). (* TODO: example for Q *)
+  split.
+    - apply assume_false. intros. reflexivity.
+    - unfold not. intros. unfold hoare_triple in H.
+      specialize H with (st:=empty_st) (r:=RError). destruct H.
+      -- apply E_AssertFail. reflexivity.
+      -- auto.
+      -- inversion H. inversion H0.
 Qed.
 
 Theorem assert_implies_assume : forall P b Q,
      ({{P}} assert b {{Q}})
   -> ({{P}} assume b {{Q}}).
 Proof.
-  (* TODO *)
+  intros. unfold hoare_triple. intros. unfold hoare_triple in H. inversion H0. eexists. split.
+  - reflexivity.
+  - specialize H with st r. destruct H.
+    -- rewrite <- H5. apply E_AssertPass. apply H3.
+    -- apply H1.
+    -- inversion H. destruct H5. inversion H6. apply H7.
 Qed.
 
 
