@@ -179,8 +179,7 @@ Inductive ceval : com -> state -> result -> Prop :=
       beval st b = true ->
       st =[ assume b ]=> RNormal st
 
-  | E_Havoc : forall st x n,
-    (*verificar se n é numero*)
+  | E_Havoc : forall st x (n: nat),
     st =[ havoc x ]=> RNormal (x !-> n ; st)
   
   | E_NonDetChoiceLeft : forall c1 c2 st r,
@@ -415,12 +414,14 @@ Qed.
 (* ================================================================= *)
 
 Definition havoc_pre (X : string) (Q : Assertion) : Assertion :=
-  (* TODO *).
+  fun st => forall n, Q (X !-> n ; st).
 
 Theorem hoare_havoc : forall (Q : Assertion) (X : string),
   {{ havoc_pre X Q }} havoc X {{ Q }}.
 Proof.
-  (* TODO *)
+  intros Q X st r H HP. inversion H. eexists. split.
+    - reflexivity.
+    - unfold havoc_pre in HP. specialize HP with n. assumption.
 Qed.
 
 
@@ -446,7 +447,9 @@ Example assert_assume_example:
   X := X + 1
   {{ X = 42 }}.  
 Proof.
-  (* TODO *)
+
+  unfold hoare_triple. intros. apply E_SeqNormal in H.
+
 Qed.
 
 
