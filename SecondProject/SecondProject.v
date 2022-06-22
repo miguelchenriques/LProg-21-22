@@ -388,9 +388,12 @@ Qed.
 (* ================================================================= *)
 
 Theorem hoare_assert: forall P (b: bexp),
-  (*TODO: Hoare proof rule for [assert b] *)
+  {{P /\ b}} assert b {{P}}.
 Proof.
-  (* TODO *)
+  intros P b st st' H HP. inversion H; subst; eexists.
+    - split. reflexivity. inversion HP. assumption.
+    - split; inversion HP; inversion H2; rewrite H4 in H1; discriminate.
+  Unshelve. assumption.
 Qed.
 
 (* ================================================================= *)
@@ -398,9 +401,11 @@ Qed.
 (* ================================================================= *)
 
 Theorem hoare_assume: forall (P:Assertion) (b:bexp),
-  (*TODO: Hoare proof rule for [assume b] *)
+  {{b -> P}} assume b {{P}}.
 Proof.
-  (* TODO *)
+  intros P b st st' H HP. inversion H. eexists. split.
+    - reflexivity.
+    - apply HP. apply H1.
 Qed.
 
 
