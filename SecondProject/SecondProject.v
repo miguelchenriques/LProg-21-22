@@ -581,7 +581,7 @@ Definition prog1 : com :=
   ((X := X + 1) !! (X := 3));
   assert (X = 2)
   }>.
-(*
+
 Example prog1_example1:
   exists st',
        prog1 / RNormal (X !-> 1) -->* <{ skip }> / RNormal st'
@@ -596,7 +596,7 @@ Example prog1_example2:
 Proof.
   (* TODO *) 
 Qed.
-  *)  
+  
 
 (* ################################################################# *)
 (* EXERCISE 7 (4 points): Prove the following properties.            *)
@@ -618,7 +618,24 @@ Lemma one_step_beval_b: forall st b b',
   b / st -->b b' ->
   beval st b = beval st b'.
 Proof.
-  (* TODO *)
+  induction b; intros.
+    - inversion H.
+    - inversion H.
+    - inversion H; subst; simpl.
+      -- apply one_step_aeval_a in H3. rewrite H3. reflexivity.
+      -- apply one_step_aeval_a in H4. rewrite H4. reflexivity.
+      -- inversion H.
+        --- destruct (n1 =? n2); inversion H3.
+        --- destruct (n1 =? n2); inversion H2.
+        --- destruct (n1 =? n2); reflexivity.
+    - inversion H; simpl.
+      -- apply one_step_aeval_a in H3. rewrite H3. reflexivity.
+      -- apply one_step_aeval_a in H4. rewrite H4. reflexivity.
+      -- inversion H; destruct (n1 <=? n2); reflexivity.
+    - inversion H; try reflexivity. simpl. rewrite IHb with (b':=b1'). reflexivity. assumption.
+    - inversion H; try reflexivity; simpl.
+      -- rewrite IHb1 with (b':=b1'). reflexivity. assumption.
+      -- rewrite IHb2 with (b':=b2'). reflexivity. assumption.
 Qed.
 
 
