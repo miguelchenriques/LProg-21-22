@@ -464,7 +464,7 @@ Proof.
     - apply hoare_asgn.
     - eapply hoare_consequence_pre.
       -- apply hoare_assume.
-      -- unfold "->>". intros. simpl in *. inversion H.
+      -- unfold "->>". intros. simpl in *. inversion H. rewrite H. rewrite H2 in *. discriminate. 
 Qed.
 
 
@@ -503,28 +503,28 @@ Inductive cstep : (com * result)  -> (com * result) -> Prop :=
   | CS_While : forall st b c1,
           <{while b do c1 end}> / st 
       --> <{ if b then (c1; while b do c1 end) else skip end }> / st
-  (*TODO: rule(s) for Assert *)
+
   | CS_AssertStep: forall st b b',
       b / st -->b b' ->
       <{ assert b }> / RNormal st --> <{ assert b' }> / RNormal st
   | CS_AssertPass: forall  st,
-      <{ assert true }> / RNormal st --> <{ assert true }> / RNormal st
+      <{ assert true }> / RNormal st --> <{ skip }> / RNormal st
   | CS_AssertFail: forall  st,
-      <{ assert false }> / RNormal st --> <{ assert false }> / RError
-  (*TODO: rule(s) for Assume *)
+      <{ assert false }> / RNormal st --> <{ skip }> / RError
+
   | CS_AssumeStep: forall st b b',
       b / st -->b b' ->
       <{ assume b }> / RNormal st --> <{ assume b' }> / RNormal st
-  | CS_Assume: forall  st b,
-      <{ assume b }> / RNormal st --> <{ assume b }> / RNormal st
-  (*TODO: rule(s) for Havoc *)
-  | CS_Havoc: forall st x n st',
-      <{ havoc x }> / RNormal st --> n / RNormal st'
-  (*TODO: rule(s) for Choice *)
-  | CS_ChoiceLeft: forall st c1 c2,
-      <{ c1 !! c2 }> / RNormal st --> c1 / RNormal st
-  | CS_ChoiceRight: forall st c1 c2 st',
-      <{ c1 !! c2 }> / RNormal st --> c2 / RNormal st
+  | CS_Assume: forall  st,
+      <{ assume true }> / RNormal st --> <{ skip }> / RNormal st
+
+  | CS_Havoc: forall st x n,
+      <{ havoc x }> / RNormal st --> <{ skip }> / RNormal (x !-> n ; st)
+
+  | CS_ChoiceLeft: forall r c1 c2,
+      <{ c1 !! c2 }> / r --> <{ c1 }> / r
+  | CS_ChoiceRight: forall r c1 c2,
+      <{ c1 !! c2 }> / r --> <{ c2 }> / r
 
   where " t '/' st '-->' t' '/' st' " := (cstep (t,st) (t',st')).
 
@@ -606,6 +606,8 @@ Lemma one_step_aeval_a: forall st a a',
   a / st -->a a' ->
   aeval st a = aeval st a'.
 Proof.
+  intros. induction a.
+    -simpl. apply H.
   (* TODO (Hint: you can prove this by induction on a) *)
 Qed.
 
