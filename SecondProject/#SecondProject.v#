@@ -464,7 +464,7 @@ Proof.
     - apply hoare_asgn.
     - eapply hoare_consequence_pre.
       -- apply hoare_assume.
-      -- unfold "->>". intros. simpl in *. inversion H.
+      -- unfold "->>". intros. simpl in *. inversion H. rewrite H. rewrite H2 in *. discriminate. 
 Qed.
 
 
