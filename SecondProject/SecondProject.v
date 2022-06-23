@@ -588,13 +588,58 @@ Example prog1_example1:
     /\ st' X = 2.
 Proof.
   (* TODO *)
+  eexists. split.
+  unfold prog1.
+
+  eapply multi_step. apply CS_SeqStep.
+  apply CS_AssumeStep. apply BS_Eq1. apply AS_Id.
+  eapply multi_step. apply CS_SeqStep.
+  apply CS_AssumeStep. apply BS_Eq.
+  simpl. eapply multi_step. apply CS_SeqStep.
+  apply CS_Assume.
+  eapply multi_step. apply CS_SeqFinish.
+  eapply multi_step. apply CS_SeqStep.
+  apply CS_ChoiceLeft. eapply multi_step. apply CS_SeqStep.
+  apply CS_AssStep. apply AS_Plus1. apply AS_Id.
+  eapply multi_step. apply CS_SeqStep.
+  apply CS_AssStep. apply AS_Plus.
+  eapply multi_step. apply CS_SeqStep.
+  apply CS_Asgn.
+  eapply multi_step. apply CS_SeqFinish.
+  simpl. eapply multi_step. apply CS_AssertStep.
+  apply BS_Eq1. apply AS_Id.
+  eapply multi_step. apply CS_AssertStep.
+  apply BS_Eq.
+  simpl.
+  eapply multi_step. apply CS_AssertPass.
+  eapply multi_refl.
+  reflexivity.
+
 Qed.
 
 
 Example prog1_example2:
        prog1 / RNormal (X !-> 1) -->* <{ skip }> / RError.
 Proof.
-  (* TODO *) 
+  (* TODO *)
+  unfold prog1.
+  eapply multi_step. apply CS_SeqStep.
+  apply CS_AssumeStep. apply BS_Eq1. apply AS_Id.
+  eapply multi_step. apply CS_SeqStep.
+  apply CS_AssumeStep. apply BS_Eq.
+  simpl. eapply multi_step. apply CS_SeqStep.
+  apply CS_Assume.
+  eapply multi_step. apply CS_SeqFinish.
+  eapply multi_step. apply CS_SeqStep.
+  apply CS_ChoiceRight. eapply multi_step. apply CS_SeqStep.
+  apply CS_Asgn.
+  eapply multi_step. apply CS_SeqFinish.
+  eapply multi_step. apply CS_AssertStep.
+  apply BS_Eq1. apply AS_Id.
+  eapply multi_step. apply CS_AssertStep.
+  apply BS_Eq.
+  simpl. eapply multi_step. apply CS_AssertFail.
+  eapply multi_refl.
 Qed.
     
 
