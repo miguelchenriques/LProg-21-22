@@ -489,9 +489,27 @@ Inductive cstep : (com * result)  -> (com * result) -> Prop :=
           <{while b do c1 end}> / st 
       --> <{ if b then (c1; while b do c1 end) else skip end }> / st
   (*TODO: rule(s) for Assert *)
+  | CS_AssertStep: forall st b b',
+      b / st -->b b' ->
+      <{ assert b }> / RNormal st --> <{ assert b' }> / RNormal st
+  | CS_AssertPass: forall  st,
+      <{ assert true }> / RNormal st --> <{ assert true }> / RNormal st
+  | CS_AssertFail: forall  st,
+      <{ assert false }> / RNormal st --> <{ assert false }> / RError
   (*TODO: rule(s) for Assume *)
+  | CS_AssumeStep: forall st b b',
+      b / st -->b b' ->
+      <{ assume b }> / RNormal st --> <{ assume b' }> / RNormal st
+  | CS_Assume: forall  st b,
+      <{ assume b }> / RNormal st --> <{ assume b }> / RNormal st
   (*TODO: rule(s) for Havoc *)
+  | CS_Havoc: forall st x n st',
+      <{ havoc x }> / RNormal st --> n / RNormal st'
   (*TODO: rule(s) for Choice *)
+  | CS_ChoiceLeft: forall st c1 c2,
+      <{ c1 !! c2 }> / RNormal st --> c1 / RNormal st
+  | CS_ChoiceRight: forall st c1 c2 st',
+      <{ c1 !! c2 }> / RNormal st --> c2 / RNormal st
 
   where " t '/' st '-->' t' '/' st' " := (cstep (t,st) (t',st')).
 
