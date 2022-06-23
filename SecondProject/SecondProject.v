@@ -581,7 +581,7 @@ Definition prog1 : com :=
   ((X := X + 1) !! (X := 3));
   assert (X = 2)
   }>.
-
+(*
 Example prog1_example1:
   exists st',
        prog1 / RNormal (X !-> 1) -->* <{ skip }> / RNormal st'
@@ -596,7 +596,7 @@ Example prog1_example2:
 Proof.
   (* TODO *) 
 Qed.
-    
+  *)  
 
 (* ################################################################# *)
 (* EXERCISE 7 (4 points): Prove the following properties.            *)
@@ -606,9 +606,12 @@ Lemma one_step_aeval_a: forall st a a',
   a / st -->a a' ->
   aeval st a = aeval st a'.
 Proof.
-  intros. induction a.
-    -simpl. apply H.
-  (* TODO (Hint: you can prove this by induction on a) *)
+  induction a; intros.
+    - inversion H.
+    - inversion H. reflexivity.
+    - inversion H; simpl; auto.
+    - inversion H; simpl; auto.
+    - inversion H; simpl; auto.
 Qed.
 
 Lemma one_step_beval_b: forall st b b',
