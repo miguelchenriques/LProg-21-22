@@ -5,40 +5,51 @@
  - Filipe Barroso, 102152, filipe.bom.barroso@tecnico.ulisboa.pt
 
 # Implemented Features
-Task 1 (Imp.v):
 
-- Extend `com` ✔️
-- New notation ✔️
-- Examples `p1` and `p2` ✔️
+EXERCISE 1 ✔️ (Extend the syntax of IMP):
 
-Task 2 (Interpreter.v):
+- Assert notation ✔️
+- Assume notation ✔️
+- Havoc notation ✔️
+- Choice notation ✔️
 
-- Implementation of step-indexed evaluator ✔️
-- Proof of `p1_equals_p2` ✔️
-- Proof of `ceval_step_more` ✔️
+EXERCISE 2 ✔️ (Define a relational evaluation (big-step semantics)):
 
-Task 3 (RelationalEvaluation.v):
+- Rules for `Assert` ✔️
+- Rules for `Assume` ✔️
+- Rule for `Havoc` ✔️
+- Rules for `Choice` ✔️
 
-- Definition of `ceval` ✔️
-- Proof of the examples `ceval_example_*` ✔️
-- Proof of `cequiv_ex1` and `cequiv_ex2` ✔️
-- Idempotence ✔️
-- Commutativity ✔️
-- Associativity ✔️
-- Distributivity (left) ✔️
-- Congruence ✔️
+EXERCISE 3 ✔️ (Prove properties involving [assert] and [assume]):
 
-Exercise 1 (1) ✔️
-Exercise 2 (1.5) ✔️
-Exercise 3 (3.5) ✔️
-Exercise 4 (5)
-- 4.1 (1) ✔️
-- 4.2 (1) ✔️
-- 4.3 (1) ✔️
-- 4.4 (1) ✔️
-- 4.5 (1) ✔️
-Exercise 5 (2.5) ✔️
-Exercise 6 (2.5) ✔️
-Exercise 7 (4) ✔️
+- Proof of `assume_false` ✔️
+- Proof of `assert_assume_differ` ✔️
+- Proof of `assert_implies_assume` ✔️
 
-Done 20
+EXERCISE 4 ✔️ (Define Hoare rules for the new operators in IMP):
+
+- State and proof of `hoare_assert` ✔️
+- State and proof of `hoare_assume` ✔️
+- State and proof of `hoare_havoc` and define `havoc_pre` ✔️
+- State and proof of `hoare_choice` ✔️
+- Proof of `assert_assume_example` ✔️
+
+EXERCISE 5 ✔️ (Define a relational evaluation (small-step semantics)):
+
+- Rules for `Assert` ✔️
+- Rules for `Assume` ✔️
+- Rule for `Havoc` ✔️
+- Rules for `Choice` ✔️
+
+EXERCISE 6 ✔️ (Show that the program [prog1] can successfully terminate in a state where [X=2] and it can also terminate in an error state):
+
+- Proof of `prog1_example1` ✔️
+- Proof of `prog1_example2` ✔️
+
+EXERCISE 7 ✔️ (Proofs):
+
+- Proof of `one_step_aeval_a` ✔️
+- Proof of `one_step_beval_b` ✔️
+- Proof of `aval_asgn_if` ✔️
+- Proof of `small_step_big_step1` ✔️
+
