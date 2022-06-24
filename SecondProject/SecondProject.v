@@ -587,7 +587,6 @@ Example prog1_example1:
        prog1 / RNormal (X !-> 1) -->* <{ skip }> / RNormal st'
     /\ st' X = 2.
 Proof.
-  (* TODO *)
   eexists. split.
   unfold prog1.
 
@@ -621,7 +620,6 @@ Qed.
 Example prog1_example2:
        prog1 / RNormal (X !-> 1) -->* <{ skip }> / RError.
 Proof.
-  (* TODO *)
   unfold prog1.
   eapply multi_step. apply CS_SeqStep.
   apply CS_AssumeStep. apply BS_Eq1. apply AS_Id.
@@ -689,7 +687,10 @@ Lemma aval_asgn_if: forall st x a result,
   st =[ x := a ]=> result ->
   <{ x := a }> / RNormal st -->* <{ skip }> / result.
 Proof.
-  (* TODO *)
+  intros.
+    - eapply multi_step.
+    -- inversion H0. subst. inversion H. subst. apply CS_Asgn.
+    -- apply multi_refl.
 Qed.
 
 
@@ -698,7 +699,49 @@ Lemma small_step_big_step1: forall c c' st st' st'',
 -> st' =[ c' ]=> RNormal st''
 -> st =[ c ]=> RNormal st''.
 Proof.
-  (* TODO (Hint: you can prove this by induction on c) *)
+  induction c; intros.
+  - inversion H.
+  - inversion H. subst.
+    -- apply one_step_aeval_a in H2. inversion H0. apply E_Asgn. rewrite H2. apply H5.
+    -- subst. inversion H0. apply E_Asgn. reflexivity.
+  - inversion H. subst.
+    -- inversion H0. subst. eapply E_SeqNormal.
+      --- specialize IHc1 with (c':=c1'). specialize IHc1 with (st':=st'). apply IHc1.
+        ---- apply H2.
+        ---- apply H4.
+      --- apply H7.
+    -- eapply E_SeqNormal. 
+      --- apply E_Skip.
+      --- apply H0.
+  - inversion H; subst. inversion H0; subst.
+    -- apply one_step_beval_b in H2. rewrite H7 in H2. apply E_IfTrue.
+      --- apply H2.
+      --- apply H8.
+    -- apply one_step_beval_b in H2. rewrite H7 in H2. apply E_IfFalse.
+      --- apply H2.
+      --- apply H8.
+    -- apply E_IfTrue.
+      --- auto.
+      --- apply H0.
+    -- apply E_IfFalse.
+      --- auto.
+      --- apply H0.
+  - inversion H; subst. inversion H0; subst.
+    -- inversion H7; subst. eapply E_WhileTrueNormal.
+      --- apply H6.
+      --- apply H3.
+      --- apply H8.
+    -- inversion H7; subst. eapply E_WhileFalse. apply H6.
+  - inversion H; subst. inversion H0; subst.
+    -- apply one_step_beval_b in H2. rewrite H5 in H2. apply E_AssertPass. apply H2.
+    -- inversion H0. apply E_AssertPass. reflexivity.
+  - inversion H; subst. inversion H0; subst.
+    -- apply one_step_beval_b in H2. rewrite H5 in H2. apply E_Assume. apply H2.
+    -- inversion H0. apply E_Assume. reflexivity.
+  - inversion H; subst. inversion H0; subst. apply E_Havoc.
+  - inversion H; subst.
+    -- apply E_NonDetChoiceLeft. apply H0.
+    -- apply E_NonDetChoiceRight. apply H0.
 Qed. 
 
 
